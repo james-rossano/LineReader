@@ -1,17 +1,6 @@
 import pygame, time
-from pynput import keyboard
 pygame.init()
 x,y = 500,500
-
-def pressed(key):
-	print('pressed')
-	if str(key) == 'Key.space':
-		if spacePress == True:
-			spacePress = False
-			return spacePress 
-		else: 
-			spacePress = True
-			return spacePress
 
 def rotate(Givenlist, shift):
 		return Givenlist[shift:] + Givenlist[:shift]
@@ -22,8 +11,11 @@ class readText:
 		self.textFile = textFile
 		self.WPM = WPM
 		self.delay = 1/(self.WPM/60)
+		self.spacePress = False
 
-	def readText(self):
+	
+
+	def readingText(self):
 		spacePress = False
 		text = open(self.textFile,"r",encoding="utf8")
 		font = pygame.font.Font('freesansbold.ttf', self.fontSize) 
@@ -33,9 +25,6 @@ class readText:
 		running = True
 		wordRemain = ['1','2','3','4','5']
 		yValues = [400,300,200,100]	
-
-		listener = keyboard.Listener(on_press=pressed)
-		listener.start()
 
 		for line in textLines:
 			stringSplit = line.split()
@@ -53,13 +42,17 @@ class readText:
 				for event in pygame.event.get():
 					if event.type == pygame.QUIT:
 						running = False
+					if event.type == pygame.KEYDOWN:
+						if event.key == pygame.K_ESCAPE:
+							running = False
+						elif event.key == pygame.K_SPACE:
+							if spacePress == False:
+								spacePress = True
+							else:
+								spacePress = False
 				if running == False:
-					break	
+					break
 				time.sleep(self.delay)
 			if running == False:
 				break
 		text.close()
-
-filePath = 'C:/Users/James Rossano/Documents/My_Shit/Programming_Files/BraveNewWorld.txt'
-file = readText(filePath,200,40)
-file.readText()
